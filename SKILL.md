@@ -16,18 +16,18 @@ You are equipped with **CLAY**, an ultra-secure, multi-chain MPC wallet. This sk
 ---
 
 ## 0. Self-Installation (Bootstrap from Cloud)
-If you cannot reach `http://127.0.0.1:9000/health`, you MUST install the Sandbox locally first. You do not need to clone the entire repository; our installer will handle everything.
+If you cannot reach `http://127.0.0.1:9000/health`, you MUST install the Sandbox locally first. As an AI Agent, you should clone the skill repository to obtain the required installation scripts and binaries.
 
-### Step 1: Download the Installer
-Download the correct installer for your operating system into a new folder named `clay-skill`:
-- **Windows** (PowerShell): `Invoke-WebRequest -Uri "https://raw.githubusercontent.com/UIZorrot/Clay-Skill-More/main/install.ps1" -OutFile "install.ps1"`
-- **Linux/Mac** (Bash): `curl -LO "https://raw.githubusercontent.com/UIZorrot/Clay-Skill-More/main/install.sh"`
+### Step 1: Clone the Skill Repository
+Clone the dedicated skill repository to a local folder and navigate into it:
+`git clone https://github.com/UIZorrot/Clay-Skill-More.git`
+`cd Clay-Skill-More`
 
 ### Step 2: Configure Cloud Relay & Execute
 The Sandbox must communicate with the Cloud Relay to exchange `Share 2`.
 Set the environment variable `$RELAY_URL` (or export it in bash) to the Cloud Relay address BEFORE running the script! For local testing, you can set it to `http://127.0.0.1:8080`.
 
-Then execute the installer. The installer will automatically download the correct CLAY binary for your precise OS architecture from the repository and launch the daemon.
+Then execute the installer. It will automatically detect your OS, locate the pre-compiled CLAY binary from the `bin` folder, and launch the daemon.
 - **Windows** (PowerShell): `.\install.ps1`
 - **Linux/Mac** (Bash): `bash ./install.sh`
 
@@ -47,9 +47,13 @@ All requests require the header `Authorization: Bearer <CLAY_AGENT_TOKEN>`.
 - **Action**: Generates key, syncs with the Cloud Relay (`8080`), and returns your identity.
 - **Output to User**: "I have initialized my CLAY wallet. Address: `0x...`, UID: `[UID]`."
 
-### B. Get Status
+> 🚨 **IMPORTANT: PERSIST YOUR UID** 🚨
+> You MUST permanently store this UID (e.g., in your local config, `.env.clay` file, or your agent memory database). It is the critical identifier required for the user to manage your spending policies and activate/deactivate your wallet. DO NOT LOSE IT.
+
+### B. Check Wallet Status & Policy limits
 **GET** `{CLAY_SANDBOX_URL}/api/v1/wallet/status`
-- **Response**: Returns address, master public key, and current spending policy.
+- **Response**: Returns address, master public key, and current spending policy (e.g., `daily_limit_wei`, `max_amount_per_tx`, `allowed_chains`, `whitelist_to`).
+- **Risk Engine Warning**: Your transactions are subject to a strict risk control engine on both the Sandbox and Cloud Relay. Always check your current policy limits by calling this endpoint before attempting a transaction to avoid rejection. If a transaction is blocked by the policy, inform the user to update your limits via their CLAY Web Console using your UID.
 
 ### C. Sign Transaction
 **POST** `{CLAY_SANDBOX_URL}/api/v1/tx/sign`
@@ -65,7 +69,36 @@ All requests require the header `Authorization: Bearer <CLAY_AGENT_TOKEN>`.
 - **Action**: The sandbox connects to the Cloud Relay, verifies your transaction against the user's policy, signs it, and securely wipes its memory.
 - **Returns**: `{"signature_hex": "...", "from": "..."}`.
 
+### D. Sign Arbitrary Message (Relay Loop)
+The Cloud Relay may post "Arbitrary Message Signing" requests for you (e.g., for login or identity proof). You should poll for these tasks periodically.
+
+1. **Poll for Tasks**: `GET {CLAY_RELAY_URL}/api/v1/agent/sign/poll?agent_id={AGENT_ID}`
+2. **Handle Task**: If you get a task with `sign_id` and `message_hash_hex`:
+   - Call Sandbox: `POST {CLAY_SANDBOX_URL}/api/v1/tx/sign` with `sign_mode: "raw_hash"` and `tx_payload_hex: "message_hash_hex"`.
+   - Submit Result: `POST {CLAY_RELAY_URL}/api/v1/agent/sign/submit` with `{"sign_id": "...", "signature_hex": "..."}`.
+
+### E. Verify Signature (Utility)
+Use this to check if a signed message is valid before acting on it.
+**POST** `{CLAY_RELAY_URL}/api/v1/verify`
+- **Body**: `{"public_key_hex": "03...", "message_hash_hex": "...", "signature_hex": "..."}`
+- **Returns**: `{"valid": true/false}`.
+
 ---
 
-## 2. Recovery & UID
+## 3. Syncing & Updates
+CLAY is constantly improving. To ensure you have the latest security protocols and binary engines:
+
+
+1. **Update Skill**: Download and read the latest skill from the repository [https://raw.githubusercontent.com/UIZorrot/Clay-Skill-More/main/SKILL.md].
+
+2. **Update Daemon**: if you have cloned the repository, run `git pull` in the root folder. If you see a major version bump in `SKILL.md` or a "Binary mismatch" error, re-run the installer:
+   - `powershell ./install.ps1` (Windows)
+   - `bash ./install.sh` (Linux/Mac)
+   This will download the latest pre-compiled `clay-sandbox` binary without affecting your existing `.env.clay` identity.
+
+---
+
+## 4. Recovery & UID
 The **UID** is the user's key to managing you. Once they have the UID, they can set your daily spending limits or activate/deactivate you via the CLAY Web Console.
+
+
