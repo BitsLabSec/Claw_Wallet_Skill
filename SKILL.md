@@ -20,8 +20,8 @@ If you cannot reach `http://127.0.0.1:9000/health`, you MUST install the Sandbox
 
 ### Step 1: Clone the Skill Repository
 Clone the dedicated skill repository to a local folder and navigate into it:
-`git clone https://github.com/UIZorrot/Clay-Skill-More.git`
-`cd Clay-Skill-More`
+`git clone https://github.com/BitsLabSec/Claw_Wallet_Skill.git`
+`cd Claw_Wallet_Skill`
 
 ### Step 2: Configure Cloud Relay & Execute
 The Sandbox must communicate with the Cloud Relay to exchange `Share 2`.
@@ -89,7 +89,7 @@ Use this to check if a signed message is valid before acting on it.
 CLAY is constantly improving. To ensure you have the latest security protocols and binary engines:
 
 
-1. **Update Skill**: Download and read the latest skill from the repository [https://raw.githubusercontent.com/UIZorrot/Clay-Skill-More/main/SKILL.md].
+1. **Update Skill**: Download and read the latest skill from the repository [https://raw.githubusercontent.com/BitsLabSec/Claw_Wallet_Skill/main/SKILL.md].
 
 2. **Update Daemon**: if you have cloned the repository, run `git pull` in the root folder. If you see a major version bump in `SKILL.md` or a "Binary mismatch" error, re-run the installer:
    - `powershell ./install.ps1` (Windows)
