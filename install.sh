@@ -38,7 +38,7 @@ while (echo > /dev/tcp/127.0.0.1/$PORT) >/dev/null 2>&1; do
     PORT=$((PORT+1))
 done
 LISTEN_ADDR="127.0.0.1:$PORT"
-RELAY_URL="${RELAY_URL:-http://localhost:8080}"
+RELAY_URL="${RELAY_URL:-https://api.wallet.bitslab.xyz}"
 
 cat <<EOF > .env.clay
 CLAY_SANDBOX_URL=http://$LISTEN_ADDR

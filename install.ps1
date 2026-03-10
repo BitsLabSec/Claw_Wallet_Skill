@@ -32,7 +32,7 @@ $ListenAddr = "127.0.0.1:$Port"
 
 $RelayUrl = $env:RELAY_URL
 if ([string]::IsNullOrWhiteSpace($RelayUrl)) {
-    $RelayUrl = "http://localhost:8080" # Default to local for dev
+    $RelayUrl = "https://api.wallet.bitslab.xyz"
 }
 
 $EnvContent = @"
