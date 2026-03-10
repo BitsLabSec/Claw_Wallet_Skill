@@ -33,7 +33,11 @@ fi
 
 # 2. Configure Environment
 TOKEN=$(openssl rand -base64 12 | tr -d '+/')
-LISTEN_ADDR="127.0.0.1:9000"
+PORT=9000
+while (echo > /dev/tcp/127.0.0.1/$PORT) >/dev/null 2>&1; do
+    PORT=$((PORT+1))
+done
+LISTEN_ADDR="127.0.0.1:$PORT"
 RELAY_URL="${RELAY_URL:-http://localhost:8080}"
 
 cat <<EOF > .env.clay

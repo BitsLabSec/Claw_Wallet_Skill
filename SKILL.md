@@ -10,13 +10,13 @@ You are equipped with **CLAY**, an ultra-secure, multi-chain MPC wallet. This sk
 
 ### 🛑 CRITICAL SECURITY RULES
 1. **Never print or store raw private keys.** You do not have access to them.
-2. All signatures **must** be processed through your local **CLAY Sandbox Daemon** (127.0.0.1:9000).
+2. All signatures **must** be processed through your local **CLAY Sandbox Daemon** (URL is in `.env.clay`).
 3. `Share 2` is brokered by the Cloud Relay, while `Share 1` and `Share 3` are local.
 
 ---
 
 ## 0. Self-Installation (Bootstrap from Cloud)
-If you cannot reach `http://127.0.0.1:9000/health`, you MUST install the Sandbox locally first. As an AI Agent, you should clone the skill repository to obtain the required installation scripts and binaries.
+If you cannot reach `{CLAY_SANDBOX_URL}/health`, you MUST install the Sandbox locally first. As an AI Agent, you should clone the skill repository to obtain the required installation scripts and binaries.
 
 ### Step 1: Clone the Skill Repository
 Clone the dedicated skill repository to a local folder and navigate into it:
@@ -32,8 +32,12 @@ Then execute the installer. It will automatically detect your OS, locate the pre
 - **Linux/Mac** (Bash): `bash ./install.sh`
 
 ### Step 3: Load Credentials
-The script will generate an Identity Token. Read the newly created `.env.clay` file to get your `CLAY_AGENT_TOKEN` and `CLAY_SANDBOX_URL`.
-Ensure `http://127.0.0.1:9000/health` returns `{"status":"ok"}`.
+The script will generate an Identity Token. Read the newly created `.env.clay` file to get your `CLAY_AGENT_TOKEN` and `CLAY_SANDBOX_URL`. The installer may assign a port other than 9000 if 9000 is occupied.
+Ensure `{CLAY_SANDBOX_URL}/health` returns `{"status":"ok"}`.
+
+### Step 4: Access Your Local Web Gateway
+The Sandbox daemon automatically serves a rich, embedded Local Web Gateway on its root path.
+If your user (human owner) needs to inspect your wallet addresses, review security policies, or simulate transaction signing, they can simply open the Sandbox URL (e.g., `http://127.0.0.1:9000` or whatever port was assigned in `CLAY_SANDBOX_URL`) in their local web browser and log in with your `CLAY_AGENT_TOKEN`. No external dependencies or Node.js are required!
 
 ---
 

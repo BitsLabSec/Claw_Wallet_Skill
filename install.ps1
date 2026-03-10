@@ -20,7 +20,15 @@ if (!(Test-Path $BinaryTarget)) {
 # 2. Configure Environment
 $EnvFile = ".env.clay"
 $Token = [System.Convert]::ToBase64String((1..18 | ForEach-Object { [byte](Get-Random -Minimum 0 -Maximum 255) })) -replace "[+\/]", ""
-$ListenAddr = "127.0.0.1:9000"
+$BasePort = 9000
+$Port = $BasePort
+while ($true) {
+    if (-not (Get-NetTCPConnection -LocalPort $Port -ErrorAction SilentlyContinue)) {
+        break
+    }
+    $Port++
+}
+$ListenAddr = "127.0.0.1:$Port"
 
 $RelayUrl = $env:RELAY_URL
 if ([string]::IsNullOrWhiteSpace($RelayUrl)) {
